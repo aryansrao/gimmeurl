@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GimmeURL — Download</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --surface2: #f0efe9;
+      --border: #e2e0d8;
+      --border2: #ccc9be;
+      --text: #1a1917;
+      --text2: #6b6860;
+      --text3: #a8a59e;
+      --accent: #1a1917;
+      --blue: #dce8ff;
+      --blue-mid: #a8c4f8;
+      --blue-dark: #3366cc;
+      --green: #d4f4e2;
+      --green-dark: #1a7a45;
+      --red: #fde8e8;
+      --red-dark: #cc3333;
+      --purple: #e8deff;
+      --purple-mid: #c4a8f8;
+      --purple-dark: #6633cc;
+      --sans: 'Geist', sans-serif;
+      --mono: 'Geist', sans-serif;
+      --r: 16px;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 48px;
+    }
+
+    button,
+    input {
+      font-family: var(--sans);
+      outline: none;
+    }
+
+    input::placeholder {
+      color: var(--text3);
+    }
+
+    /* ── LOGO ── */
+    .page-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      align-self: flex-start;
+      max-width: 560px;
+      width: 100%;
+    }
+
+    .logo-mark {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .logo-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 560px;
+      overflow: hidden;
+    }
+
+    /* Big file preview section */
+    .file-preview {
+      background: var(--blue);
+      border-bottom: 1px solid var(--blue-mid);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .preview-thumb {
+      width: 120px;
+      height: 120px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1.5px solid var(--blue-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .preview-thumb svg {
+      width: 44px;
+      height: 44px;
+      stroke: var(--blue-dark);
+      fill: none;
+      stroke-width: 1.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .preview-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-name {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      max-width: 100%;
+    }
+
+    .preview-sub {
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--text2);
+      text-align: center;
+    }
+
+    /* ── CONTENT ── */
+    .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* File details row */
+    .detail-row {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .detail-thumb {
+      width: 68px;
+      height: 68px;
+      border-radius: 14px;
+      background: var(--blue);
+      border: 1px solid var(--blue-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .detail-thumb svg {
+      width: 26px;
+      height: 26px;
+      stroke: var(--blue-dark);
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .detail-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detail-info-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      margin-bottom: 3px;
+    }
+
+    .detail-info-meta {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text3);
+      line-height: 1.6;
+    }
+
+    /* Link row */
+    .url-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .link-input {
+      flex: 1;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      padding: 0 12px;
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text2);
+      min-width: 0;
+    }
+
+    .copy-btn {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .15s;
+      flex-shrink: 0;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* Progress section */
+    .progress-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--text3);
+    }
+
+    .progress-track {
+      height: 10px;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: var(--blue-dark);
+      transition: width .15s ease;
+    }
+
+    /* Chunk map */
+    .chunk-map {
+      height: 12px;
+      border-radius: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chunk-map canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .stat-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .stat-lbl {
+      font-size: 10px;
+      font-family: var(--mono);
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 4px;
+    }
+
+    .stat-val {
+      font-size: 15px;
+      font-weight: 600;
+      font-family: var(--mono);
+      color: var(--text);
+    }
+
+    /* Speed chart */
+    .chart-box {
+      height: 80px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chart-box canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* Status text */
+    .status-txt {
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--text3);
+      text-align: center;
+      min-height: 16px;
+    }
+
+    .status-txt.ok {
+      color: var(--green-dark);
+    }
+
+    .status-txt.err {
+      color: var(--red-dark);
+    }
+
+    /* Big download button */
+    .dl-btn {
+      width: 100%;
+      height: 48px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+      display: none;
+    }
+
+    .dl-btn.show {
+      display: block;
+    }
+
+    .dl-btn:hover {
+      opacity: .88;
+    }
+
+    .dl-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    /* Connection + disconnect row */
+    .conn-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .conn-pill {
+      flex: 1;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+    }
+
+    .conn-pill.active {
+      background: var(--green);
+      border-color: #7de6b0;
+      color: var(--green-dark);
+    }
+
+    .conn-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text3);
+    }
+
+    .conn-pill.active .conn-dot {
+      background: var(--green-dark);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .35
+      }
+    }
+
+    .disconnect-btn {
+      height: 44px;
+      padding: 0 20px;
+      border-radius: 12px;
+      border: 1px solid var(--red-dark);
+      background: var(--red);
+      color: var(--red-dark);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+      flex-shrink: 0;
+    }
+
+    .disconnect-btn:hover {
+      background: #fad2d2;
+    }
+
+    /* Connection mode badges */
+    .mode-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .mode-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-family: var(--mono);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border2);
+      color: var(--text3);
+      background: var(--surface2);
+    }
+
+    .mode-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border2);
+    }
+
+    .mode-badge.active {
+      color: var(--blue-dark);
+      border-color: var(--blue-mid);
+      background: var(--blue);
+    }
+
+    .mode-badge.active::before {
+      background: var(--blue-dark);
+    }
+
+    .mode-badge.trying {
+      color: var(--text2);
+      border-color: var(--border2);
+    }
+
+    .mode-badge.trying::before {
+      background: var(--text2);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    .mode-badge.failed {
+      color: var(--text3);
+      opacity: .6;
+    }
+
+    .footer-note {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text3);
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        border-radius: 12px;
+      }
+
+      .file-preview {
+        padding: 22px 16px;
+      }
+
+      .detail-row {
+        grid-template-columns: 1fr;
+      }
+
+      .url-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .conn-row {
+        flex-direction: column;
+      }
+
+      .disconnect-btn,
+      .conn-pill {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page-logo">
+    <div class="logo-mark"><img src="logo-gimmeurl.png" alt="GimmeURL"></div>
+    <span class="logo-name">GimmeURL</span>
+  </div>
+
+  <div class="card">
+    <!-- BIG PREVIEW (shows when file is known) -->
+    <div class="file-preview" id="file-preview" style="display:none">
+      <div class="preview-thumb" id="preview-thumb"></div>
+      <div class="preview-name" id="preview-name">Loading…</div>
+      <div class="preview-sub" id="preview-sub">Fetching file info…</div>
+    </div>
+
+    <div class="card-body">
+
+      <!-- DETAIL ROW -->
+      <div class="detail-row">
+        <div class="detail-thumb" id="detail-thumb"></div>
+        <div>
+          <div class="detail-info-name" id="file-name">Loading…</div>
+          <div class="detail-info-meta" id="file-meta">Fetching metadata…</div>
+        </div>
+      </div>
+
+      <!-- URL ROW -->
+      <div class="url-row">
+        <input class="link-input" id="file-url" readonly placeholder="File url">
+        <button class="copy-btn" id="copy-url-btn">Copy</button>
+      </div>
+
+      <!-- MODE BADGES -->
+      <div class="mode-row">
+        <div class="mode-badge" id="m-lan">LAN direct</div>
+        <div class="mode-badge" id="m-p2p">WebRTC P2P</div>
+        <div class="mode-badge" id="m-http">HTTP fallback</div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>Download progress</span>
+          <span id="bar-pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="prog-fill"></div>
+        </div>
+      </div>
+
+      <!-- CHUNK MAP -->
+      <div class="chunk-map"><canvas id="cmap"></canvas></div>
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-lbl">Speed</div>
+          <div class="stat-val" id="s-spd">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-lbl">Downloaded</div>
+          <div class="stat-val" id="s-dl">0 B</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-lbl">ETA</div>
+          <div class="stat-val" id="s-eta">—</div>
+        </div>
+      </div>
+
+      <!-- CHART -->
+      <div class="chart-box"><canvas id="schart"></canvas></div>
+
+      <!-- STATUS -->
+      <div class="status-txt" id="status-txt">Initialising…</div>
+
+      <!-- DOWNLOAD BUTTON -->
+      <button class="dl-btn" id="dl-btn" onclick="startDownload()">Download file</button>
+
+      <!-- CONNECTION ROW -->
+      <div class="conn-row">
+        <div class="conn-pill" id="conn-pill">
+          <div class="conn-dot"></div>
+          <span id="conn-label">Disconnected</span>
+        </div>
+        <button class="disconnect-btn" id="disc-btn" onclick="disconnectNow()">Disconnect</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer-note" id="footer-note">File is available while the sender is online.</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script>
+    const ICE = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
+    const params = new URLSearchParams(location.search);
+    const fileId = params.get('get') || location.pathname.split('/').pop();
+    const API = location.origin;
+    const peerId = 'recv-' + Math.random().toString(36).slice(2, 10);
+    const PARALLEL = 8;
+
+    let meta = null, chunks = [], chunkDone = [], totalDone = 0;
+    let mode = null, dc = null, pc = null, es = null;
+    let spdHist = Array(60).fill(0), chart;
+    let bytesRx = 0, lastBytesRx = 0, lastT = Date.now(), peakSpd = 0;
+
+    // URL display
+    const urlEl = document.getElementById('file-url');
+    if (urlEl) urlEl.value = window.location.href;
+    document.getElementById('copy-url-btn').onclick = () => {
+      navigator.clipboard.writeText(window.location.href).then(() => setStatus('Link copied', 'ok'));
+    };
+
+    // ── Icon helper ────────────────────────────────────────────────────────────
+    function getIcon(name, size = 24) {
+      const e = (name || '').toLowerCase().split('.').pop();
+      const s = `fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"`;
+      if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'].includes(e))
+        return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
+      if (['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(e))
+        return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`;
+      if (['mp3', 'wav', 'flac', 'aac', 'ogg'].includes(e))
+        return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
+      if (['pdf'].includes(e))
+        return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
+      if (['zip', 'rar', 'tar', 'gz', '7z'].includes(e))
+        return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/></svg>`;
+      return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+    }
+
+    function fmt(b) {
+      if (b < 1024) return b + 'B'; if (b < 1 << 20) return (b / 1024).toFixed(1) + 'KB';
+      if (b < 1 << 30) return (b / 1048576).toFixed(1) + 'MB'; return (b / 1073741824).toFixed(2) + 'GB';
+    }
+
+    function setStatus(msg, cls = '') {
+      const el = document.getElementById('status-txt');
+      el.textContent = msg; el.className = 'status-txt ' + cls;
+    }
+
+    function setMode(m, st) {
+      const el = document.getElementById('m-' + m);
+      if (!el) return;
+      el.className = 'mode-badge' + (st === 'active' ? ' active' : st === 'trying' ? ' trying' : st === 'fail' ? ' failed' : '');
+      if (st === 'active') {
+        const pill = document.getElementById('conn-pill');
+        pill.classList.add('active');
+        document.getElementById('conn-label').textContent =
+          m === 'lan' ? 'Connected via LAN' : m === 'p2p' ? 'Connected via WebRTC' : 'HTTP download';
+      }
+    }
+
+    // ── Chart ──────────────────────────────────────────────────────────────────
+    function initChart() {
+      const ctx = document.getElementById('schart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array(60).fill(''),
+          datasets: [{
+            data: [...spdHist],
+            borderColor: '#3366cc',
+            borderWidth: 1.5,
+            fill: true,
+            backgroundColor: ctx2 => {
+              const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, 80);
+              g.addColorStop(0, 'rgba(51,102,204,.18)');
+              g.addColorStop(1, 'rgba(51,102,204,.02)');
+              return g;
+            },
+            tension: .4, pointRadius: 0
+          }]
+        },
+        options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { display: false },
+            y: {
+              min: 0, grid: { color: 'rgba(26,25,23,.06)' },
+              ticks: { color: '#a8a59e', font: { family: 'Geist', size: 9 }, callback: v => v.toFixed(0), maxTicksLimit: 3 }
+            }
+          }
+        }
+      });
+    }
+    initChart();
+
+    // ── Tick ───────────────────────────────────────────────────────────────────
+    setInterval(() => {
+      const now = Date.now(), dt = (now - lastT) / 1000;
+      const spd = Math.max(0, (bytesRx - lastBytesRx) / (dt * 1048576));
+      lastBytesRx = bytesRx; lastT = now;
+      spdHist.push(spd); spdHist.shift();
+      if (chart) { chart.data.datasets[0].data = [...spdHist]; chart.update('none'); }
+      document.getElementById('s-spd').textContent = spd.toFixed(2) + ' MB/s';
+      document.getElementById('s-dl').textContent = fmt(bytesRx);
+      if (meta && totalDone > 0 && spd > 0) {
+        const rem = (meta.total_size - bytesRx) / (spd * 1048576);
+        document.getElementById('s-eta').textContent = rem < 60 ? rem.toFixed(0) + 's' : (rem / 60).toFixed(1) + 'm';
+      }
+      const pct = meta ? (totalDone / meta.chunk_count) * 100 : 0;
+      document.getElementById('prog-fill').style.width = pct + '%';
+      document.getElementById('bar-pct').textContent = pct.toFixed(0) + '%';
+    }, 250);
+
+    // ── Chunk map ──────────────────────────────────────────────────────────────
+    function renderMap() {
+      if (!meta) return;
+      const cv = document.getElementById('cmap');
+      const w = cv.parentElement.offsetWidth;
+      cv.width = w; cv.height = 12;
+      const ctx = cv.getContext('2d');
+      ctx.clearRect(0, 0, w, 12);
+      const cw = w / meta.chunk_count;
+      for (let i = 0; i < meta.chunk_count; i++) {
+        ctx.fillStyle = chunkDone[i] ? '#3366cc' : chunks[i] ? '#a8c4f8' : '#e2e0d8';
+        ctx.fillRect(Math.floor(i * cw), 0, Math.max(1, Math.ceil(cw) - 1), 12);
+      }
+    }
+    setInterval(renderMap, 150);
+
+    // ── Boot ───────────────────────────────────────────────────────────────────
+    async function boot() {
+      if (!fileId) { setStatus('No file ID found in URL', 'err'); return; }
+      setStatus('Fetching file info…');
+      try {
+        const res = await fetch(`${API}/meta/${fileId}`);
+        if (!res.ok) { setStatus('File not found or expired', 'err'); return; }
+        meta = await res.json();
+        chunks = new Array(meta.chunk_count);
+        chunkDone = new Array(meta.chunk_count).fill(false);
+
+        // Update UI with file info
+        document.getElementById('file-name').textContent = meta.name;
+        document.getElementById('file-meta').innerHTML =
+          fmt(meta.total_size) + ' · ' + meta.chunk_count + ' chunks · available while sender is online';
+
+        // Set icons
+        const icon = getIcon(meta.name);
+        document.getElementById('detail-thumb').innerHTML = icon;
+
+        // Show big preview
+        const preview = document.getElementById('file-preview');
+        preview.style.display = 'flex';
+        document.getElementById('preview-thumb').innerHTML = icon;
+        document.getElementById('preview-name').textContent = meta.name;
+        document.getElementById('preview-sub').textContent =
+          fmt(meta.total_size) + ' · ready to download';
+
+        document.getElementById('footer-note').textContent =
+          'This file is available while the sender keeps the app running.';
+
+        setStatus('Ready — tap Download to start');
+        document.getElementById('dl-btn').classList.add('show');
+      } catch (e) {
+        setStatus('Could not reach server', 'err');
+      }
+    }
+    boot();
+
+    // ── Start download ─────────────────────────────────────────────────────────
+    async function startDownload() {
+      const btn = document.getElementById('dl-btn');
+      btn.disabled = true;
+      btn.textContent = 'Downloading…';
+      setStatus('Finding fastest path to the file…');
+
+      // 1. Try LAN
+      const lanPeer = meta.peers?.find(p => p.lan_addr);
+      if (lanPeer) {
+        setMode('lan', 'trying');
+        try {
+          const test = await Promise.race([
+            fetch(`http://${lanPeer.lan_addr}/health`),
+            new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 800))
+          ]);
+          if (test.ok) {
+            setMode('lan', 'active');
+            setStatus('Connected via LAN — fastest speed!', 'ok');
+            await downloadChunks(`http://${lanPeer.lan_addr}`);
+            return;
+          }
+        } catch (_) { setMode('lan', 'fail'); }
+      } else { setMode('lan', 'fail'); }
+
+      // 2. Try WebRTC P2P
+      setMode('p2p', 'trying');
+      const ok = await tryP2P();
+      if (ok) {
+        setMode('p2p', 'active');
+        setStatus('Connected via WebRTC — direct peer link', 'ok');
+        await downloadViaP2P();
+        return;
+      }
+      setMode('p2p', 'fail');
+
+      // 3. HTTP fallback
+      setMode('http', 'active');
+      setStatus('Downloading via server…');
+      await downloadChunks(API);
+    }
+
+    // ── HTTP download ──────────────────────────────────────────────────────────
+    async function downloadChunks(base) {
+      const q = Array.from({ length: meta.chunk_count }, (_, i) => i);
+      let idx = 0;
+      async function worker() {
+        while (idx < q.length) {
+          const ci = q[idx++];
+          if (chunkDone[ci]) continue;
+          try {
+            const res = await fetch(`${base}/chunk/${fileId}/${ci}`);
+            const buf = await res.arrayBuffer();
+            chunks[ci] = new Uint8Array(buf);
+            chunkDone[ci] = true;
+            bytesRx += buf.byteLength;
+            totalDone++;
+          } catch (_) { idx--; await sleep(200); }
+        }
+      }
+      await Promise.all(Array(PARALLEL).fill(null).map(() => worker()));
+      assembleAndSave();
+    }
+
+    // ── WebRTC P2P ─────────────────────────────────────────────────────────────
+    function tryP2P() {
+      return new Promise(resolve => {
+        pc = new RTCPeerConnection(ICE);
+        const timeout = setTimeout(() => resolve(false), 5000);
+        pc.ondatachannel = e => {
+          dc = e.channel; dc.binaryType = 'arraybuffer';
+          clearTimeout(timeout);
+          dc.onopen = () => resolve(true);
+          dc.onerror = () => resolve(false);
+        };
+        pc.onicecandidate = async ev => {
+          if (ev.candidate) {
+            await fetch(`${API}/signal/${fileId}`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'ice', from: peerId, to: 'sender-' + fileId.slice(0, 8), candidate: ev.candidate.candidate })
+            });
+          }
+        };
+        es = new EventSource(`${API}/signal/${fileId}?peer_id=${peerId}`);
+        es.onmessage = async e => {
+          const msg = JSON.parse(e.data);
+          if (msg.type === 'offer' && msg.to === peerId) {
+            await pc.setRemoteDescription({ type: 'offer', sdp: msg.sdp });
+            const ans = await pc.createAnswer();
+            await pc.setLocalDescription(ans);
+            await fetch(`${API}/signal/${fileId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'answer', from: peerId, to: msg.from, sdp: ans.sdp }) });
+          } else if (msg.type === 'ice' && msg.to === peerId) {
+            await pc.addIceCandidate({ candidate: msg.candidate, sdpMid: '0' });
+          }
+        };
+      });
+    }
+
+    async function downloadViaP2P() {
+      let pending = new Map(), partsMap = new Map();
+      dc.onmessage = async ev => {
+        let buf = ev.data;
+        if (buf instanceof Blob) buf = await buf.arrayBuffer();
+        if (!(buf instanceof ArrayBuffer)) return;
+        const view = new Uint8Array(buf);
+        const nl = view.indexOf(0x0a);
+        if (nl < 0) return;
+        const hdr = JSON.parse(new TextDecoder().decode(view.slice(0, nl)));
+        const payload = view.slice(nl + 1);
+        if (!hdr || typeof hdr.idx !== 'number') return;
+        const idx = hdr.idx;
+        const totalParts = (hdr.parts || 1);
+        const part = (hdr.part || 0);
+        const totalBytes = Number.isFinite(hdr.total) ? hdr.total : null;
+        if (totalParts <= 1) {
+          if (totalBytes && payload.byteLength < totalBytes) {
+            dc.send(JSON.stringify({ req: idx }));
+            return;
+          }
+          if (!chunkDone[idx]) {
+            chunks[idx] = payload;
+            chunkDone[idx] = true;
+            bytesRx += payload.byteLength;
+            totalDone++;
+            pending.get(idx)?.();
+            pending.delete(idx);
+          }
+          return;
+        }
+        let entry = partsMap.get(idx);
+        if (!entry || entry.totalParts !== totalParts) {
+          entry = { totalParts, got: 0, parts: new Array(totalParts), totalBytes: totalBytes || null };
+          partsMap.set(idx, entry);
+        }
+        if (totalBytes && !entry.totalBytes) entry.totalBytes = totalBytes;
+        if (!entry.parts[part]) { entry.parts[part] = payload; entry.got++; bytesRx += payload.byteLength; }
+        if (entry.got >= entry.totalParts) {
+          let tlen = 0; for (const p of entry.parts) tlen += p ? p.byteLength : 0;
+          if (entry.totalBytes && tlen < entry.totalBytes) {
+            bytesRx = Math.max(0, bytesRx - tlen);
+            partsMap.delete(idx);
+            dc.send(JSON.stringify({ req: idx }));
+            return;
+          }
+          const out = new Uint8Array(tlen); let off = 0;
+          for (const p of entry.parts) { if (!p) continue; out.set(p, off); off += p.byteLength; }
+          partsMap.delete(idx); chunks[idx] = out; chunkDone[idx] = true; totalDone++;
+          pending.get(idx)?.(); pending.delete(idx);
+        }
+      };
+      let next = 0; const inFlight = new Set();
+      async function pump() {
+        while (next < meta.chunk_count) {
+          while (inFlight.size >= PARALLEL) await sleep(20);
+          const ci = next++;
+          if (chunkDone[ci]) continue;
+          inFlight.add(ci);
+          dc.send(JSON.stringify({ req: ci }));
+          new Promise(r => pending.set(ci, r)).then(() => inFlight.delete(ci));
+        }
+        while (inFlight.size > 0) await sleep(50);
+      }
+      await pump();
+      if (es) { es.close(); es = null; }
+      assembleAndSave();
+    }
+
+    function assembleAndSave() {
+      setStatus('Done! Putting the file together…', 'ok');
+      const blob = new Blob(chunks.map((c, i) => c || new Uint8Array(0)), { type: meta.mime_type || 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = meta.name; a.click();
+      URL.revokeObjectURL(url);
+      setStatus('Download complete! Check your downloads folder.', 'ok');
+      const btn = document.getElementById('dl-btn');
+      btn.textContent = 'Download again'; btn.disabled = false;
+    }
+
+    function disconnectNow() {
+      try { if (dc) dc.close(); } catch (_) { }
+      try { if (pc) pc.close(); } catch (_) { }
+      if (es) { es.close(); es = null; }
+      mode = null;
+      const pill = document.getElementById('conn-pill');
+      pill.classList.remove('active');
+      document.getElementById('conn-label').textContent = 'Disconnected';
+      setStatus('Disconnected', 'err');
+      const btn = document.getElementById('dl-btn');
+      btn.disabled = false; btn.textContent = 'Download file';
+      ['lan', 'p2p', 'http'].forEach(m => { const el = document.getElementById('m-' + m); if (el) el.className = 'mode-badge'; });
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+  </script>
+</body>
+
+</html>

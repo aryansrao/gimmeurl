@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GimmeURL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="logo-gimmeurl.png" type="image/png">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f5f4f0;
+            --surface: #ffffff;
+            --surface2: #f0efe9;
+            --border: #e2e0d8;
+            --border2: #ccc9be;
+            --text: #1a1917;
+            --text2: #6b6860;
+            --text3: #a8a59e;
+            --accent: #1a1917;
+            --blue: #dce8ff;
+            --blue-mid: #a8c4f8;
+            --blue-dark: #3366cc;
+            --purple: #e8deff;
+            --purple-mid: #c4a8f8;
+            --purple-dark: #6633cc;
+            --green: #d4f4e2;
+            --green-dark: #1a7a45;
+            --red: #fde8e8;
+            --red-dark: #cc3333;
+            --sans: 'Geist', sans-serif;
+            --mono: 'Geist', sans-serif;
+            --r: 16px;
+            --r-sm: 10px;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+        }
+
+        html,
+        body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+
+        button,
+        input {
+            font-family: var(--sans);
+            outline: none;
+        }
+
+        input::placeholder {
+            color: var(--text3);
+        }
+
+        /* ── LOGO ── */
+        .page-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 2px 2px 6px;
+            flex-shrink: 0;
+        }
+
+        .logo-mark {
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-mark img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .logo-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text3);
+        }
+
+        .dot.on {
+            background: #22c55e;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .4
+            }
+        }
+
+        /* ── CONNECTED SANDBOX BAR ── */
+        .sandbox-bar {
+            display: none;
+            align-items: center;
+            padding: 0 20px;
+            height: 44px;
+            background: var(--purple);
+            border-bottom: 1px solid var(--purple-mid);
+            gap: 10px;
+        }
+
+        .sandbox-bar.visible {
+            display: none;
+        }
+
+        .sandbox-bar-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--purple-dark);
+            flex: 1;
+        }
+
+        .sandbox-bar-label span {
+            font-family: var(--mono);
+            font-size: 11px;
+            opacity: .8;
+        }
+
+        .sb-disconnect {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--purple-dark);
+            background: rgba(255, 255, 255, .5);
+            border: 1px solid var(--purple-mid);
+            border-radius: 999px;
+            padding: 5px 14px;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .sb-disconnect:hover {
+            background: white;
+        }
+
+        /* ── SCROLL CONTAINER ── */
+        .app {
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px 16px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .app.has-bar {
+            height: 100vh;
+        }
+
+        /* ── UPLOAD ZONE ── */
+        .upload-card {
+            background: var(--surface);
+            border: 1.5px dashed var(--border2);
+            border-radius: var(--r);
+            padding: 36px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .15s, background .15s;
+            flex-shrink: 0;
+        }
+
+        .upload-card:hover,
+        .upload-card.over {
+            border-color: var(--accent);
+            background: var(--surface2);
+        }
+
+        .upload-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+        }
+
+        .upload-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text2);
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .upload-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .upload-sub {
+            font-size: 12px;
+            color: var(--text3);
+            font-family: var(--mono);
+        }
+
+        #fi {
+            display: none;
+        }
+
+        /* ── SANDBOX PANEL ── */
+        .sandbox-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .panel-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px 10px;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .panel-count {
+            font-size: 11px;
+            font-family: var(--mono);
+            color: var(--text3);
+        }
+
+        /* Search */
+        .search-wrap {
+            padding: 0 12px 12px;
+            position: relative;
+        }
+
+        .search-ico {
+            position: absolute;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 15px;
+            stroke: var(--text3);
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            padding: 0 14px 0 38px;
+            font-size: 13px;
+            color: var(--text);
+            transition: border-color .15s;
+        }
+
+        .search-input:focus {
+            border-color: var(--border2);
+        }
+
+        /* File grid */
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            padding: 0 12px 12px;
+        }
+
+        .file-tile {
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            background: var(--surface2);
+            padding: 8px;
+            cursor: pointer;
+            transition: border-color .15s, transform .15s, box-shadow .15s;
+            text-align: left;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .file-tile:hover {
+            border-color: var(--border2);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+            transform: translateY(-1px);
+        }
+
+        .file-tile.selected {
+            border-color: var(--accent);
+            background: var(--surface);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+        }
+
+        .file-tile.mine {
+            border-color: var(--purple-mid);
+            background: var(--purple);
+        }
+
+        .file-tile.mine.selected {
+            border-color: var(--purple-dark);
+        }
+
+        .file-tile.hidden {
+            display: none;
+        }
+
+        .tile-thumb {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            background: var(--blue);
+            border: 1px solid var(--blue-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .file-tile.mine .tile-thumb {
+            background: var(--purple);
+            border-color: var(--purple-mid);
+        }
+
+        .tile-thumb svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--blue-dark);
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .file-tile.mine .tile-thumb svg {
+            stroke: var(--purple-dark);
+        }
+
+        .tile-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tile-ext {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: rgba(255, 255, 255, .88);
+            border-radius: 5px;
+            padding: 1px 5px;
+            font-size: 8px;
+            font-family: var(--mono);
+            color: var(--text2);
+        }
+
+        .tile-name {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text);
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            line-clamp: 2;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .tile-label {
+            font-size: 10px;
+            font-family: var(--mono);
+            color: var(--text3);
+        }
+
+        .file-tile.mine .tile-label {
+            color: var(--purple-dark);
+            opacity: .8;
+        }
+
+        /* progress bar */
+        .tile-prog {
+            height: 3px;
+            border-radius: 2px;
+            background: var(--border);
+            overflow: hidden;
+        }
+
+        .tile-prog-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--blue-dark);
+            transition: width .15s;
+        }
+
+        .file-empty {
+            grid-column: 1 / -1;
+            padding: 24px 0;
+            font-size: 12px;
+            font-family: var(--mono);
+            color: var(--text3);
+            text-align: center;
+        }
+
+        /* Sandbox link row */
+        .sandbox-link-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-top: 1px solid var(--border);
+            background: var(--surface2);
+        }
+
+        .sandbox-link-label {
+            font-size: 11px;
+            color: var(--text3);
+            font-family: var(--mono);
+            flex-shrink: 0;
+        }
+
+        .link-input {
+            flex: 1;
+            height: 34px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            padding: 0 10px;
+            font-size: 11px;
+            font-family: var(--mono);
+            color: var(--text2);
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .copy-btn {
+            height: 34px;
+            padding: 0 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border2);
+            background: var(--accent);
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: opacity .15s;
+        }
+
+        .copy-btn:hover {
+            opacity: .85;
+        }
+
+        /* ── DETAIL PANEL ── */
+        .detail-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .detail-inner {
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            gap: 14px;
+            padding: 16px;
+            align-items: center;
+        }
+
+        .detail-thumb {
+            width: 72px;
+            height: 72px;
+            border-radius: 14px;
+            background: var(--blue);
+            border: 1px solid var(--blue-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .detail-thumb svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--blue-dark);
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .detail-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            margin-bottom: 3px;
+        }
+
+        .detail-meta {
+            font-size: 11px;
+            font-family: var(--mono);
+            color: var(--text3);
+            margin-bottom: 10px;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .act-btn {
+            height: 30px;
+            padding: 0 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text2);
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .act-btn:hover {
+            border-color: var(--border2);
+            color: var(--text);
+        }
+
+        .act-btn.primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .act-btn.primary:hover {
+            opacity: .85;
+        }
+
+        .act-btn.danger {
+            color: var(--red-dark);
+            border-color: rgba(204, 51, 51, .25);
+            background: var(--red);
+        }
+
+        .act-btn.danger:hover {
+            background: #fad2d2;
+        }
+
+        .act-btn:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        .detail-url-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 16px 16px;
+        }
+
+        .detail-foot {
+            font-size: 11px;
+            font-family: var(--mono);
+            color: var(--text3);
+            padding: 0 16px 14px;
+        }
+
+        @media (max-width: 720px) {
+            .app {
+                padding: 12px 12px 72px;
+            }
+
+            .panel-top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .detail-inner {
+                grid-template-columns: 1fr;
+                align-items: start;
+            }
+
+            .detail-url-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sandbox-link-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .link-input {
+                width: 100%;
+            }
+
+            .file-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+        }
+
+        /* ── STATUS BAR ── */
+        .statusbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: none;
+            align-items: center;
+            padding: 0 16px;
+            gap: 14px;
+            z-index: 30;
+        }
+
+        .sb-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-family: var(--mono);
+            color: var(--text3);
+        }
+
+        .sb-right {
+            margin-left: auto;
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: 48px;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: var(--accent);
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 7px 16px;
+            border-radius: 999px;
+            opacity: 0;
+            transition: all .2s;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 99;
+        }
+
+        .toast.on {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CONNECTED SANDBOX BAR -->
+    <div class="sandbox-bar" id="sandbox-bar">
+        <span class="sandbox-bar-label" id="sandbox-bar-label">Connected sandbox</span>
+        <button class="sb-disconnect" id="sb-disconnect-btn">Disconnect</button>
+    </div>
+
+    <!-- MAIN SCROLL AREA -->
+    <div class="app" id="app">
+
+        <div class="page-logo">
+            <div class="logo-mark"><img src="logo-gimmeurl.png" alt="GimmeURL"></div>
+            <span class="logo-name">GimmeURL</span>
+        </div>
+
+        <!-- UPLOAD -->
+        <div class="upload-card" id="dz" onclick="document.getElementById('fi').click()" ondragover="ev(event,'add')"
+            ondragleave="ev(event,'rem')" ondrop="drop(event)">
+            <div class="upload-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+            </div>
+            <div class="upload-title">Upload a file or select files here</div>
+            <div class="upload-sub">Share instantly via WebRTC, LAN, or HTTP</div>
+        </div>
+        <input type="file" id="fi" multiple onchange="fpick(event)">
+
+        <!-- SANDBOX GRID PANEL -->
+        <div class="sandbox-panel">
+            <div class="panel-top">
+                <span class="panel-title" id="panel-title-label">My Sandbox</span>
+                <span class="panel-count" id="panel-count">empty</span>
+            </div>
+            <div class="search-wrap">
+                <svg class="search-ico" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="7" />
+                    <line x1="20" y1="20" x2="16.5" y2="16.5" />
+                </svg>
+                <input class="search-input" id="search" placeholder="Search for files here..."
+                    oninput="filter(this.value)">
+            </div>
+            <div class="file-grid" id="file-grid">
+                <div class="file-empty" id="grid-empty">No files yet — drop something above</div>
+            </div>
+            <div class="sandbox-link-row">
+                <span class="sandbox-link-label">Sandbox url</span>
+                <input class="link-input" id="sandbox-link" readonly>
+                <button class="copy-btn" onclick="copySandbox()">Copy</button>
+                <button class="copy-btn" onclick="openSandboxFolder()">Open folder</button>
+            </div>
+        </div>
+
+        <!-- DETAIL PANEL -->
+        <div class="detail-panel" id="detail-card">
+            <div class="detail-inner">
+                <div class="detail-thumb" id="d-thumb">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="detail-name" id="d-name">Select a file</div>
+                    <div class="detail-meta" id="d-meta">Choose a file to see details</div>
+                    <div class="detail-actions">
+                        <button class="act-btn primary" id="d-copy" onclick="copySelected()" disabled>Copy link</button>
+                        <button class="act-btn" id="d-open" onclick="openSelected()" disabled>Open</button>
+                        <button class="act-btn danger" id="d-del" onclick="deleteSelected()" disabled>Delete</button>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-url-row">
+                <input class="link-input" id="d-url" readonly placeholder="File url">
+                <button class="copy-btn" id="d-copy2" onclick="copySelected()" disabled>Copy</button>
+            </div>
+            <div class="detail-foot" id="d-foot">Links stay active while the app is running.</div>
+        </div>
+
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="statusbar">
+        <div class="sb-pill">
+            <div class="dot on"></div>
+            <span id="sb-msg">GimmeURL ready</span>
+        </div>
+        <div class="sb-pill sb-right">
+            <div class="dot" id="sb-p2p-dot"></div>
+            <span id="sb-p2p">WebRTC idle</span>
+        </div>
+        <div class="sb-pill"><span id="sb-chunks">0 chunks</span></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { invoke } from 'https://unpkg.com/@tauri-apps/api@2/core';
+        import { listen } from 'https://unpkg.com/@tauri-apps/api@2/event';
+
+        const API = 'http://localhost:3737';
+        const SIGNAL_BASE = (localStorage.getItem('gimmeurl_signal_base') || 'https://gimmeurl.vercel.app').replace(/\/$/, '');
+        const SIGNAL_API = `${SIGNAL_BASE}/api`;
+        const shareUrl = id => `${SIGNAL_BASE}/?get=${encodeURIComponent(id)}`;
+        const sandboxUrl = id => `${SIGNAL_BASE}/?sandbox=${encodeURIComponent(id)}`;
+        const ICE_CFG = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
+
+        // ── Sandbox ID ──────────────────────────────────────────────────────────────
+        function getOrCreateSandboxId() {
+            let id = (localStorage.getItem('gimmeurl_sandbox_id') || '').trim();
+            if (!id) {
+                id = 'sb-' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6);
+                localStorage.setItem('gimmeurl_sandbox_id', id);
+            }
+            return id.slice(0, 80);
+        }
+        const MY_SANDBOX = getOrCreateSandboxId();
+
+        // Check if we are viewing someone else's sandbox
+        const params = new URLSearchParams(location.search);
+        const CONNECTED_SANDBOX = params.get('sandbox') || null;
+        const IS_GUEST = CONNECTED_SANDBOX && CONNECTED_SANDBOX !== MY_SANDBOX;
+
+        // State
+        let queue = [];  // { file, id, status, url, fileId, mine, previewUrl, isImg, thumbData, thumbPromise }
+        let lanIp = null;
+        let totalUpBytes = 0;
+        let sseConns = {};
+        let rtcConns = {};
+        let selectedId = null;
+
+        // ── Init UI ─────────────────────────────────────────────────────────────────
+        const sbLinkEl = g('sandbox-link');
+        sbLinkEl.value = IS_GUEST ? sandboxUrl(CONNECTED_SANDBOX) : sandboxUrl(MY_SANDBOX);
+
+        if (IS_GUEST) {
+            const bar = g('sandbox-bar');
+            bar.classList.add('visible');
+            g('app').classList.add('has-bar');
+            g('sandbox-bar-label').textContent = `Connected to shared sandbox`;
+            g('panel-title-label').textContent = 'Shared Sandbox';
+            g('sb-disconnect-btn').onclick = () => {
+                location.href = location.origin + location.pathname;
+            };
+            loadGuestSandbox(CONNECTED_SANDBOX);
+        } else {
+            loadLocalSandbox();
+        }
+
+        async function loadLocalSandbox() {
+            try {
+                const files = await invoke('get_active_files');
+                (files || []).forEach(f => {
+                    const id = f?.id;
+                    if (!id) return;
+                    if (queue.find(q => q.fileId === id || q.id === id)) return;
+                    const file = {
+                        name: f.name || 'file',
+                        size: Number(f.total_size || 0),
+                        type: f.mime_type || 'application/octet-stream'
+                    };
+                    queue.push({
+                        id,
+                        status: 'd',
+                        url: shareUrl(id),
+                        fileId: id,
+                        mine: true,
+                        file,
+                        chunkCount: f.chunk_count,
+                        localDownloadUrl: f.download_url || '',
+                        previewUrl: null,
+                        isImg: false,
+                        thumbData: null,
+                        thumbPromise: null
+                    });
+                    addFileTile(file, id, true, null, false);
+                    shareLocalFile(id);
+                });
+                updateCount();
+            } catch (_) { }
+        }
+
+        async function loadGuestSandbox(sandboxId) {
+            try {
+                const res = await fetch(`${SIGNAL_API}/sandbox/${sandboxId}`);
+                if (!res.ok) return;
+                const data = await res.json();
+                (data.files || []).forEach(f => {
+                    const id = f.file_id || f.id;
+                    if (!id) return;
+                    const previewUrl = typeof f.thumb_data === 'string' ? f.thumb_data : null;
+                    queue.push({
+                        id,
+                        status: 'd',
+                        url: shareUrl(id),
+                        fileId: id,
+                        mine: false,
+                        file: { name: f.name, size: f.size, type: f.mime },
+                        chunkCount: f.chunk_count,
+                        previewUrl,
+                        isImg: Boolean(previewUrl),
+                        thumbData: previewUrl,
+                        thumbPromise: null
+                    });
+                    addFileTile({ name: f.name, size: f.size }, id, false, previewUrl, Boolean(previewUrl));
+                });
+                updateCount();
+            } catch (_) { }
+        }
+
+        // ── Tauri events ────────────────────────────────────────────────────────────
+        listen('speed', e => {
+            const { up_mbps, active_peers } = e.payload;
+            g('sb-msg').textContent = up_mbps > 0.05 ? up_mbps.toFixed(2) + ' MB/s' : 'GimmeURL ready';
+            if (active_peers > 0) {
+                g('sb-p2p-dot').classList.add('on');
+                g('sb-p2p').textContent = active_peers + ' active peers';
+            } else {
+                g('sb-p2p-dot').classList.remove('on');
+                g('sb-p2p').textContent = 'WebRTC idle';
+            }
+        });
+
+        listen('lan-ip', e => {
+            lanIp = e.payload.ip;
+        });
+
+        listen('sandbox-file-added', e => {
+            if (IS_GUEST) return;
+            const f = e.payload;
+            if (!f?.file_id) return;
+            if (queue.find(q => q.fileId === f.file_id || q.id === f.file_id)) return;
+
+            const file = { name: f.name || 'file', size: Number(f.total_size || 0), type: f.mime_type || 'application/octet-stream' };
+            const id = f.file_id;
+            queue.push({
+                file,
+                id,
+                status: 'd',
+                url: shareUrl(id),
+                fileId: id,
+                mine: true,
+                previewUrl: null,
+                isImg: false,
+                thumbData: null,
+                thumbPromise: null,
+                chunkCount: Number(f.chunk_count || 0),
+                localDownloadUrl: f.download_url || '',
+            });
+
+            addFileTile(file, id, true, null, false);
+            updateCount();
+            shareLocalFile(id);
+        });
+
+        listen('sandbox-file-removed', e => {
+            if (IS_GUEST) return;
+            const fid = e.payload?.file_id;
+            if (!fid) return;
+            unshareLocalFile(fid);
+            const removed = queue.find(q => q.fileId === fid || q.id === fid);
+            const removedId = removed?.id || fid;
+            if (removed?.previewUrl && removed.previewUrl.startsWith('blob:')) {
+                try { URL.revokeObjectURL(removed.previewUrl); } catch (_) { }
+            }
+            g('tile-' + removedId)?.remove();
+            queue = queue.filter(q => q.fileId !== fid && q.id !== fid);
+            if (selectedId === removedId) {
+                selectedId = null;
+                if (queue.length) selectFile(queue[0].id);
+                else clearDetail();
+            }
+            updateCount();
+        });
+
+        // ── Helpers ─────────────────────────────────────────────────────────────────
+        function g(id) { return document.getElementById(id); }
+        function fmt(b) {
+            if (b < 1024) return b + 'B';
+            if (b < 1 << 20) return (b / 1024).toFixed(1) + 'KB';
+            if (b < 1 << 30) return (b / 1048576).toFixed(1) + 'MB';
+            return (b / 1073741824).toFixed(2) + 'GB';
+        }
+        function extOf(n) { const i = n.lastIndexOf('.'); return i > -1 ? n.slice(i + 1).toLowerCase() : ''; }
+        function extUp(n) { return extOf(n).toUpperCase().slice(0, 6) || 'FILE'; }
+
+        function getIcon(name) {
+            const e = extOf(name);
+            const s = 'fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"';
+            if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'].includes(e))
+                return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
+            if (['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(e))
+                return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`;
+            if (['mp3', 'wav', 'flac', 'aac', 'ogg'].includes(e))
+                return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
+            if (['pdf'].includes(e))
+                return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
+            if (['zip', 'rar', 'tar', 'gz', '7z'].includes(e))
+                return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/></svg>`;
+            return `<svg viewBox="0 0 24 24" ${s} stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+        }
+
+        function esc(s) {
+            return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+        }
+
+        function createThumbData(file) {
+            if (!file) return Promise.resolve(null);
+            const name = file.name || 'file';
+            const ext = extUp(name);
+            const isBlob = (typeof Blob !== 'undefined') && (file instanceof Blob);
+            const imgExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'];
+            const isImg = isBlob && ((file.type && file.type.startsWith('image/')) || imgExts.includes(extOf(name)));
+            if (isImg) {
+                return new Promise(resolve => {
+                    const url = URL.createObjectURL(file);
+                    const img = new Image();
+                    img.onload = () => {
+                        const max = 160;
+                        const scale = Math.min(max / img.width, max / img.height, 1);
+                        const w = Math.max(1, Math.round(img.width * scale));
+                        const h = Math.max(1, Math.round(img.height * scale));
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        const data = canvas.toDataURL('image/jpeg', 0.72);
+                        URL.revokeObjectURL(url);
+                        resolve(data);
+                    };
+                    img.onerror = () => {
+                        URL.revokeObjectURL(url);
+                        resolve(null);
+                    };
+                    img.src = url;
+                });
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 160;
+            canvas.height = 160;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#e8deff';
+            ctx.fillRect(0, 0, 160, 160);
+            ctx.strokeStyle = '#c4a8f8';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(10, 10, 140, 140);
+            ctx.fillStyle = '#6633cc';
+            ctx.font = '600 28px Geist';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(ext.slice(0, 4), 80, 80);
+            return Promise.resolve(canvas.toDataURL('image/png'));
+        }
+
+        function toast(m) {
+            const t = g('toast'); t.textContent = m; t.classList.add('on');
+            clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 2400);
+        }
+
+        // ── Drag/drop ────────────────────────────────────────────────────────────────
+        window.ev = (e, action) => { e.preventDefault(); g('dz').classList[action === 'add' ? 'add' : 'remove']('over'); };
+        window.drop = e => { e.preventDefault(); g('dz').classList.remove('over'); addFiles(e.dataTransfer.files); };
+        window.fpick = e => { addFiles(e.target.files); e.target.value = ''; };
+
+        function addFiles(files) {
+            Array.from(files).forEach(f => {
+                const id = Math.random().toString(36).slice(2, 10);
+                const ext = extOf(f.name);
+                const isImg = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'].includes(ext);
+                const previewUrl = isImg && f instanceof Blob ? URL.createObjectURL(f) : null;
+                const thumbPromise = createThumbData(f);
+                queue.push({
+                    file: f,
+                    id,
+                    status: 'q',
+                    url: null,
+                    fileId: null,
+                    mine: true,
+                    previewUrl,
+                    isImg,
+                    thumbData: null,
+                    thumbPromise
+                });
+                addFileTile(f, id, true, previewUrl, isImg);
+                thumbPromise.then(data => {
+                    const item = queue.find(q => q.id === id);
+                    if (!item) return;
+                    item.thumbData = data;
+                    if (!item.isImg && data) updateTileThumb(id, data);
+                    if (selectedId === id && data && !item.isImg) renderDetail(id);
+                });
+            });
+            updateCount();
+            const myFiles = queue.filter(q => q.mine && q.status === 'q');
+            if (!selectedId && myFiles.length) selectFile(myFiles[myFiles.length - 1].id);
+            startUpload();
+        }
+
+        function addFileTile(file, id, mine, previewUrl, isImg) {
+            const grid = g('file-grid');
+            const empty = g('grid-empty');
+            if (empty) empty.style.display = 'none';
+            const e = extOf(file.name);
+
+            const tile = document.createElement('button');
+            tile.type = 'button';
+            tile.className = 'file-tile' + (mine ? ' mine' : '');
+            tile.id = 'tile-' + id;
+            tile.dataset.name = file.name;
+            tile.onclick = () => selectFile(id);
+
+            const thumb = isImg && previewUrl
+                ? `<img src="${previewUrl}" alt="">`
+                : getIcon(file.name);
+
+            const label = mine ? 'You uploaded this' : (file.name.length > 12 ? file.name.slice(0, 12) + '…' : file.name);
+
+            tile.innerHTML = `
+    <div class="tile-thumb">${thumb}<span class="tile-ext">${extUp(file.name)}</span></div>
+    <div class="tile-name" title="${esc(file.name)}">${esc(file.name)}</div>
+    <div class="tile-label" id="tile-lbl-${id}">${mine ? 'You uploaded this file' : 'File name'}</div>
+    <div class="tile-prog"><div class="tile-prog-fill" id="tile-prog-${id}"></div></div>
+  `;
+            grid.appendChild(tile);
+        }
+
+        function updateTileThumb(id, dataUrl) {
+            const tile = g('tile-' + id);
+            if (!tile) return;
+            const thumb = tile.querySelector('.tile-thumb');
+            if (!thumb) return;
+            const extEl = thumb.querySelector('.tile-ext');
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            img.alt = '';
+            thumb.innerHTML = '';
+            thumb.appendChild(img);
+            if (extEl) thumb.appendChild(extEl);
+        }
+
+        function updateCount() {
+            const n = queue.length;
+            g('panel-count').textContent = n ? n + ' file' + (n !== 1 ? 's' : '') : 'empty';
+            if (!n && g('grid-empty')) g('grid-empty').style.display = 'block';
+        }
+
+        window.filter = q => {
+            document.querySelectorAll('.file-tile').forEach(t => {
+                const match = !q || (t.dataset.name || '').toLowerCase().includes(q.toLowerCase());
+                t.classList.toggle('hidden', !match);
+            });
+        };
+
+        function selectFile(id) {
+            selectedId = id;
+            document.querySelectorAll('.file-tile.selected').forEach(t => t.classList.remove('selected'));
+            g('tile-' + id)?.classList.add('selected');
+            renderDetail(id);
+        }
+
+        function renderDetail(id) {
+            const item = queue.find(q => q.id === id);
+            if (!item) { clearDetail(); return; }
+            const f = item.file;
+            g('d-name').textContent = f.name;
+            const st = item.status === 'd' ? 'Ready' : item.status === 'u' ? 'Uploading…' : item.status === 'e' ? 'Upload failed' : 'Queued';
+            g('d-meta').textContent = fmt(f.size) + ' · ' + st;
+            g('d-url').value = item.url || 'Uploading…';
+            g('d-foot').textContent = item.url ? 'Link active while app is running.' : 'Upload in progress…';
+            if (item.isImg && item.previewUrl) {
+                g('d-thumb').innerHTML = `<img src="${item.previewUrl}" alt="">`;
+            } else if (item.thumbData) {
+                g('d-thumb').innerHTML = `<img src="${item.thumbData}" alt="">`;
+            } else {
+                g('d-thumb').innerHTML = getIcon(f.name);
+            }
+            const ok = !!item.url;
+            ['d-copy', 'd-open', 'd-copy2'].forEach(i => { const b = g(i); if (b) b.disabled = !ok; });
+            g('d-del').disabled = false;
+        }
+
+        function clearDetail() {
+            g('d-name').textContent = 'Select a file';
+            g('d-meta').textContent = 'Choose a file to see details';
+            g('d-url').value = '';
+            g('d-foot').textContent = 'Links stay active while the app is running.';
+            g('d-thumb').innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+            ['d-copy', 'd-open', 'd-copy2', 'd-del'].forEach(i => { const b = g(i); if (b) b.disabled = true; });
+        }
+        clearDetail();
+
+        window.copySandbox = () => {
+            const url = IS_GUEST ? sandboxUrl(CONNECTED_SANDBOX) : sandboxUrl(MY_SANDBOX);
+            navigator.clipboard.writeText(url).then(() => toast('Sandbox link copied!')).catch(() => toast('Copy failed'));
+        };
+
+        window.openSandboxFolder = async () => {
+            try {
+                await invoke('open_sandbox_folder');
+            } catch (_) {
+                toast('Could not open folder');
+            }
+        };
+
+        window.copySelected = () => {
+            const item = queue.find(q => q.id === selectedId);
+            if (!item?.url) { toast('No link yet'); return; }
+            navigator.clipboard.writeText(item.url).then(() => {
+                toast('Link copied!');
+                const b = g('d-copy'); if (b) { b.textContent = 'Copied!'; setTimeout(() => b.textContent = 'Copy link', 1200); }
+            });
+        };
+
+        window.openSelected = () => {
+            const item = queue.find(q => q.id === selectedId);
+            if (!item) return;
+            if (item.fileId) {
+                invoke('open_file_in_sandbox', { file_id: item.fileId }).catch(() => {
+                    if (item.url) window.open(item.url, '_blank');
+                });
+                return;
+            }
+            if (item.url) window.open(item.url, '_blank');
+        };
+
+        async function shareLocalFile(fileId) {
+            if (!fileId || IS_GUEST) return;
+            const item = queue.find(q => q.fileId === fileId || q.id === fileId);
+            if (!item || !item.mine) return;
+            const chunkCount = Number(item.chunkCount || 1) || 1;
+            const file = item.file || { name: 'file', size: 0, type: 'application/octet-stream' };
+            let thumbData = item.thumbData;
+            if (!thumbData) {
+                try { thumbData = await createThumbData(file); } catch (_) { thumbData = null; }
+                item.thumbData = thumbData;
+                if (thumbData && !item.isImg) updateTileThumb(item.id, thumbData);
+                if (selectedId === item.id) renderDetail(item.id);
+            }
+
+            await registerMeta(fileId, file, chunkCount, item.localDownloadUrl || `${API}/get/${fileId}`, thumbData);
+            startSeeding(fileId, chunkCount);
+        }
+
+        async function unshareLocalFile(fileId) {
+            if (!fileId || IS_GUEST) return;
+            if (sseConns[fileId]) {
+                try { sseConns[fileId].close(); } catch (_) { }
+                delete sseConns[fileId];
+            }
+            try { await fetch(`${SIGNAL_API}/meta/${fileId}`, { method: 'DELETE' }); } catch (_) { }
+        }
+
+        window.deleteSelected = async () => {
+            const item = queue.find(q => q.id === selectedId);
+            if (!item) return;
+            if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+            if (item.fileId) {
+                try { await invoke('delete_file', { id: item.fileId }); } catch (_) { }
+                if (sseConns[item.fileId]) { sseConns[item.fileId].close(); delete sseConns[item.fileId]; }
+                try { await fetch(`${SIGNAL_API}/meta/${item.fileId}`, { method: 'DELETE' }); } catch (_) { }
+            }
+                if (item.previewUrl && item.previewUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(item.previewUrl);
+                }
+            g('tile-' + item.id)?.remove();
+            queue = queue.filter(q => q.id !== item.id);
+            selectedId = null;
+            updateCount();
+            if (queue.length) selectFile(queue[0].id);
+            else clearDetail();
+            toast('Removed');
+        };
+
+        // ── Upload ───────────────────────────────────────────────────────────────────
+        let uploading = false;
+        async function startUpload() {
+            if (uploading) return;
+            uploading = true;
+            for (let i = 0; i < queue.length; i++) {
+                if (queue[i].status !== 'q') continue;
+                await uploadOne(i);
+            }
+            uploading = false;
+        }
+
+        function uploadOne(i) {
+            return new Promise(resolve => {
+                const item = queue[i];
+                const { file, id } = item;
+                item.status = 'u';
+                setTileLbl(id, 'Uploading…');
+                if (selectedId === id) renderDetail(id);
+
+                const fd = new FormData();
+                fd.append('file', file);
+                const xhr = new XMLHttpRequest();
+
+                xhr.upload.onprogress = e => {
+                    if (!e.lengthComputable) return;
+                    const pct = Math.floor(e.loaded / e.total * 100);
+                    const fill = g('tile-prog-' + id);
+                    if (fill) fill.style.width = pct + '%';
+                };
+
+                xhr.onload = async () => {
+                    if (xhr.status === 200) {
+                        const r = JSON.parse(xhr.responseText);
+                        const f = r.files?.[0];
+                        if (!f) { item.status = 'e'; setTileLbl(id, 'Error'); resolve(); return; }
+                        item.status = 'd';
+                        item.fileId = f.id;
+                        item.url = shareUrl(f.id);
+                        item.chunkCount = f.chunk_count;
+                        if (item.thumbPromise) {
+                            item.thumbData = await item.thumbPromise;
+                        }
+                        setTileLbl(id, 'You uploaded this file');
+                        const fill = g('tile-prog-' + id);
+                        if (fill) fill.style.width = '100%';
+                        totalUpBytes += file.size;
+                        g('sb-chunks').textContent = f.chunk_count + ' chunks';
+                        if (selectedId === id) renderDetail(id);
+                        await registerMeta(f.id, file, f.chunk_count, f.download_url, item.thumbData);
+                        startSeeding(f.id, f.chunk_count);
+                        toast('Link ready!');
+                        resolve();
+                    } else {
+                        item.status = 'e'; setTileLbl(id, 'Error'); resolve();
+                    }
+                };
+                xhr.onerror = () => { item.status = 'e'; setTileLbl(id, 'Error'); resolve(); };
+                xhr.open('POST', API + '/upload');
+                xhr.send(fd);
+            });
+        }
+
+        function setTileLbl(id, txt) {
+            const el = g('tile-lbl-' + id);
+            if (el) el.textContent = txt;
+        }
+
+        async function registerMeta(fileId, file, chunkCount, localUrl, thumbData) {
+            let senderBase = '';
+            try {
+                const u = new URL(localUrl);
+                if (!/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(u.hostname)) senderBase = u.origin;
+            } catch (_) { }
+            if (!senderBase && lanIp) senderBase = `http://${lanIp}:3737`;
+
+            try {
+                await fetch(`${SIGNAL_API}/meta/${fileId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: file.name, size: file.size, chunk_count: chunkCount,
+                        sender_url: senderBase,
+                        lan_addr: lanIp ? `${lanIp}:3737` : null,
+                        mime: file.type || 'application/octet-stream',
+                        sandbox_id: MY_SANDBOX,
+                        thumb_data: thumbData && typeof thumbData === 'string' && thumbData.length < 80000 ? thumbData : undefined,
+                    })
+                });
+            } catch (_) { toast('Signal server unavailable'); }
+        }
+
+        // ── WebRTC seeding ───────────────────────────────────────────────────────────
+        async function startSeeding(fileId, chunkCount) {
+            if (sseConns[fileId]) return;
+            const peerId = 'sender-' + fileId.slice(0, 8);
+            let stopped = false, first = true, timer = null;
+
+            async function poll() {
+                if (stopped) return;
+                const url = `${SIGNAL_API}/signal/${fileId}?peer_id=${peerId}` + (first ? '&new=1' : '');
+                first = false;
+                try {
+                    const r = await fetch(url, { headers: { 'Accept': 'text/event-stream' } });
+                    const text = await r.text();
+                    for (const line of text.split('\n')) {
+                        if (!line.startsWith('data: ')) continue;
+                        try { await handleSignal(fileId, peerId, JSON.parse(line.slice(6)), chunkCount); } catch (_) { }
+                    }
+                } catch (_) { }
+                if (!stopped) timer = setTimeout(poll, 1500);
+            }
+            poll();
+
+            sseConns[fileId] = {
+                close() {
+                    stopped = true;
+                    if (timer) clearTimeout(timer);
+                    fetch(`${SIGNAL_API}/signal/${fileId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'leave', from: peerId }) }).catch(() => { });
+                }
+            };
+        }
+
+        async function handleSignal(fileId, myId, msg, chunkCount) {
+            if (msg.type === 'peer_joined' && msg.peer_id !== myId) await initOffer(fileId, myId, msg.peer_id, chunkCount);
+            else if (msg.type === 'answer') { const pc = rtcConns[msg.from]; if (pc && msg.to === myId) await pc.setRemoteDescription({ type: 'answer', sdp: msg.sdp }); }
+            else if (msg.type === 'ice') { const pc = rtcConns[msg.from]; if (pc && msg.to === myId) await pc.addIceCandidate({ candidate: msg.candidate, sdpMid: '0' }); }
+            else if (msg.type === 'peer_left') { if (rtcConns[msg.peer_id]) { rtcConns[msg.peer_id].close(); delete rtcConns[msg.peer_id]; } }
+        }
+
+        async function initOffer(fileId, myId, targetId, chunkCount) {
+            const pc = new RTCPeerConnection(ICE_CFG);
+            rtcConns[targetId] = pc;
+            const dc = pc.createDataChannel('chunks', { ordered: false, maxRetransmits: 2 });
+            dc.binaryType = 'arraybuffer';
+            const fallback = 16 * 1024;
+            dc._maxMsg = fallback;
+            dc.onopen = () => {
+                const mx = pc.sctp?.maxMessageSize;
+                if (mx && mx > 0 && Number.isFinite(mx)) dc._maxMsg = mx;
+                g('sb-p2p').textContent = 'P2P active';
+                g('sb-p2p-dot').classList.add('on');
+            };
+
+            const reqQ = [];
+            let draining = false;
+            async function drain() {
+                if (draining) return; draining = true;
+                try { while (reqQ.length && dc.readyState === 'open') await sendChunk(dc, fileId, reqQ.shift()); }
+                finally { draining = false; }
+            }
+
+            dc.onmessage = ev => {
+                try {
+                    const req = JSON.parse(ev.data);
+                    if (req.req === undefined) return;
+                    const idx = Number(req.req);
+                    if (!Number.isFinite(idx) || idx < 0 || idx >= chunkCount) return;
+                    reqQ.push(idx); drain();
+                } catch (_) { }
+            };
+            dc.onclose = () => delete rtcConns[targetId];
+            pc.onicecandidate = e => {
+                if (!e.candidate) return;
+                fetch(`${SIGNAL_API}/signal/${fileId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'ice', from: myId, to: targetId, candidate: e.candidate.candidate }) }).catch(() => { });
+            };
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            await fetch(`${SIGNAL_API}/signal/${fileId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'offer', from: myId, to: targetId, sdp: offer.sdp }) });
+        }
+
+        async function sendChunk(dc, fileId, idx) {
+            if (dc.readyState !== 'open') return;
+            try {
+                const res = await fetch(`${API}/chunk/${fileId}/${idx}`);
+                if (!res.ok) return;
+                const buf = await res.arrayBuffer();
+                const maxMsg = dc._maxMsg || 16 * 1024;
+                const safeMax = Number.isFinite(maxMsg) && maxMsg > 512 ? maxMsg : 16 * 1024;
+                const maxPayload = Math.max(512, Math.min(32 * 1024, Math.floor(safeMax - 256)));
+                const bytes = new Uint8Array(buf);
+                const total = bytes.byteLength;
+                const parts = Math.max(1, Math.ceil(total / maxPayload));
+                let part = 0;
+                for (let off = 0; off < total && dc.readyState === 'open'; off += maxPayload) {
+                    const payload = bytes.subarray(off, Math.min(total, off + maxPayload));
+                    const hdr = new TextEncoder().encode(JSON.stringify({ idx, part, parts, sz: payload.byteLength, total }) + '\n');
+                    const frame = new Uint8Array(hdr.byteLength + payload.byteLength);
+                    frame.set(hdr); frame.set(payload, hdr.byteLength);
+                    const start = Date.now();
+                    while (dc.readyState === 'open' && dc.bufferedAmount > 8 * 1024 * 1024) {
+                        if (Date.now() - start > 4000) return;
+                        await new Promise(r => setTimeout(r, 25));
+                    }
+                    if (dc.readyState === 'open') dc.send(frame.buffer);
+                    part++;
+                }
+            } catch (_) { }
+        }
+    </script>
+</body>
+
+</html>
