@@ -20,7 +20,7 @@ jobs:
             artifact-name: GimmeURL-mac-arm64
             bundles: app,dmg
 
-          - platform: macos-13
+          - platform: macos-latest
             target: x86_64-apple-darwin
             artifact-name: GimmeURL-mac-x64
             bundles: app,dmg
@@ -88,16 +88,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APP_DIR=$(ls -1 src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app 2>/dev/null | head -n 1 || true)
-          if [[ -z "$APP_DIR" ]]; then
+          shopt -s nullglob
+          apps=(src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app)
+          if (( ${#apps[@]} == 0 )); then
             echo "No .app bundle found; skipping zip packaging."
             exit 0
           fi
+          APP_DIR="${apps[0]}"
           echo "Zipping: $APP_DIR"
           ditto -c -k --sequesterRsrc --keepParent "$APP_DIR" "$APP_DIR.zip"
 
       - name: Upload macOS artifacts
-        if: matrix.platform == 'macos-latest' || matrix.platform == 'macos-13'
+        if: startsWith(matrix.platform, 'macos')
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
