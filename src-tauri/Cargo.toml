@@ -1,6 +1,6 @@
 [package]
 name = "gimmeurl"
-version = "2.0.0"
+version = "1.0.1"
 description = "GimmeURL — Hybrid P2P + WebRTC + LAN file sharing"
 authors = ["Aryan S. Rao"]
 edition = "2021"

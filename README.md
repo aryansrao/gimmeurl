@@ -18,7 +18,7 @@ The desktop app uses this by default for metadata and WebRTC signaling.
 
 ## Download (desktop apps)
 
-Prebuilt desktop apps are published as GitHub Release assets for tagged versions (tags like `v2.0.0`).
+Prebuilt desktop apps are published as GitHub Release assets for tagged versions (tags like `v1.0.1`).
 
 - macOS: `.dmg` (and a `.zip` of the `.app` bundle)
 - Windows: `.msi` and NSIS `.exe`
@@ -26,7 +26,8 @@ Prebuilt desktop apps are published as GitHub Release assets for tagged versions
 
 Download the latest build from:
 
-- [GitHub Releases](../../releases)
+- Latest: https://github.com/aryansrao/gimmeurl/releases/latest
+- All releases: https://github.com/aryansrao/gimmeurl/releases
 
 ## What’s in this repository
 
